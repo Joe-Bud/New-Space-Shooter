@@ -7,7 +7,12 @@ public class Player : MonoBehaviour
     #region Variables
 
     [SerializeField]
-    private float speed = 5.0f;
+    private float speed = 3.5f;
+    private float originalSpeed;
+    [SerializeField]
+    public float newspeed = 8.5f;
+
+    private bool speedBoostIsActive = false;
 
     private Vector3 startPos;
 
@@ -19,11 +24,14 @@ public class Player : MonoBehaviour
 
     [SerializeField]
     private GameObject tripleShotPrefab;
-
-    [SerializeField]
-    GameObject laserContainer;
+    private GameObject tripleShot;
 
     public bool isTripleShotActive = false;
+
+    [SerializeField]
+    private float TripleShotCoolDownRate = 5.0f;
+    [SerializeField]
+    private float SpeedBoostCoolDownRate = 5.0f;
 
     [SerializeField]
     private float fireRate = 0.5f;
@@ -40,6 +48,8 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        originalSpeed = speed;
+
         SM = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
 
         if (SM == null)
@@ -91,14 +101,46 @@ public class Player : MonoBehaviour
             if(isTripleShotActive == true)
             {
                 Vector3 offset = new Vector3(1.69966674f, 0.427324027f, 0);
-                Instantiate(tripleShotPrefab, transform.position + offset, Quaternion.identity, laserContainer.transform);
+                tripleShot = Instantiate(tripleShotPrefab, transform.position + offset, Quaternion.identity);
             }
             else
             {
                 Vector3 offset = new Vector3(0, 1.01f, 0);
-                Instantiate(laserPrefab, transform.position + offset, Quaternion.identity, laserContainer.transform);
+                Instantiate(laserPrefab, transform.position + offset, Quaternion.identity);
             }
         }
+    }
+
+    IEnumerator TripleShotPowerDownRoutine()
+    {
+        yield return new WaitForSeconds(TripleShotCoolDownRate);
+        isTripleShotActive = false;
+        StopCoroutine(TripleShotPowerDownRoutine());
+    }
+
+    public void ActivateTripleShot()
+    {
+        isTripleShotActive = true;
+        StartCoroutine(TripleShotPowerDownRoutine());
+    }
+
+    public void ActivateSpeedBoost()
+    {
+        speedBoostIsActive = true;
+        StartCoroutine(SpeedBoostPowerDownRoutine());
+        if (speedBoostIsActive == true)
+        {
+            speed = newspeed;
+        }
+        else
+            speed = originalSpeed;
+    }
+
+    IEnumerator SpeedBoostPowerDownRoutine()
+    {
+        yield return new WaitForSeconds(SpeedBoostCoolDownRate);
+        speed = originalSpeed;
+        speedBoostIsActive = false;
     }
 
     public void PlayerDamage()
@@ -111,4 +153,6 @@ public class Player : MonoBehaviour
             Destroy(this.gameObject);
         }
     }
+
+    
 }

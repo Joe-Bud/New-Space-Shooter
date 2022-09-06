@@ -100,6 +100,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 8
+  tripleShot: {fileID: 7590725342249624703, guid: a300a128dfed97f49b41ca110aa51c66, type: 3}
 --- !u!50 &7019007771989179326
 Rigidbody2D:
   serializedVersion: 4

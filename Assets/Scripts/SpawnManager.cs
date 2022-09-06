@@ -12,12 +12,18 @@ public class SpawnManager : MonoBehaviour
 
     public float spawnDelay;
 
+    public float PUSpawnDelay;
+
     private bool stopSpawning = false;
+
+    [SerializeField]
+    GameObject [] powerUps; 
 
     // Start is called before the first frame update
     void Start()
     {
         StartCoroutine(EnemySpawnRoutine());
+        StartCoroutine(SpawnPowerupRoutine());
     }
 
     // Update is called once per frame
@@ -37,6 +43,18 @@ public class SpawnManager : MonoBehaviour
             //newEnemy.transform.parent = enemyContainer.transform;
             yield return new WaitForSeconds(spawnDelay);
             
+        }
+    }
+
+    IEnumerator SpawnPowerupRoutine()
+    {
+        while(stopSpawning == false)
+        {
+            PUSpawnDelay = Random.Range(3.0f, 7.0f);
+            Vector3 powerUpSpawnPos = new Vector3(Random.Range(-8, 8), 8, 0);
+            int randomPU = Random.Range(0, powerUps.Length);
+            Instantiate(powerUps[randomPU], powerUpSpawnPos, Quaternion.identity);
+            yield return new WaitForSeconds(PUSpawnDelay);
         }
     }
 
