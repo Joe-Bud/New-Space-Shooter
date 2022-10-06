@@ -46,6 +46,10 @@ public class Player : MonoBehaviour
 
     private bool shieldsActive = false;
 
+    public int score = 0;
+
+    private UIManager uiManager;
+
     private SpawnManager SM;
 
     #endregion
@@ -57,8 +61,13 @@ public class Player : MonoBehaviour
 
         SM = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
 
+        uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+
+        if (uiManager == null)
+            Debug.LogError("The UI Manager Is NULL");
+
         if (SM == null)
-            Debug.LogError("No sapwn Manager found");
+            Debug.LogError("No Spawn Manager Found");
 
         startPos = new Vector3(0, 0, 0);
         gameObject.transform.position = startPos;
@@ -167,6 +176,8 @@ public class Player : MonoBehaviour
 
         lives--;
 
+        uiManager.UpdateLives(lives);
+
         if (lives <= 0)
         {
             SM.OnPlayerDeath();
@@ -174,5 +185,10 @@ public class Player : MonoBehaviour
         }
     }
 
-    
+    public void AddPoints(int points)
+    {
+        score += points;
+        uiManager.UpdateScore(score);
+    }
 }
+
