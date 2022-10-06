@@ -41,6 +41,11 @@ public class Player : MonoBehaviour
     [SerializeField]
     private int lives = 3;
 
+    [SerializeField]
+    private GameObject Shields;
+
+    private bool shieldsActive = false;
+
     private SpawnManager SM;
 
     #endregion
@@ -57,6 +62,8 @@ public class Player : MonoBehaviour
 
         startPos = new Vector3(0, 0, 0);
         gameObject.transform.position = startPos;
+
+        Shields.SetActive(false);
     }
 
     // Update is called once per frame
@@ -143,8 +150,21 @@ public class Player : MonoBehaviour
         speedBoostIsActive = false;
     }
 
+    public void ActivateShields()
+    {
+        Shields.SetActive(true);
+        shieldsActive = true;
+    }
+
     public void PlayerDamage()
     {
+        if(shieldsActive == true)
+        {
+            shieldsActive = false;
+            Shields.SetActive(false);
+            return;
+        }
+
         lives--;
 
         if (lives <= 0)
