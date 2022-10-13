@@ -52,6 +52,12 @@ public class Player : MonoBehaviour
 
     private SpawnManager SM;
 
+    [SerializeField]
+    private GameObject[] Engines;
+
+    [SerializeField]
+    private AudioClips AC;
+
     #endregion
 
     // Start is called before the first frame update
@@ -62,6 +68,11 @@ public class Player : MonoBehaviour
         SM = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
 
         uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+
+        AC = GameObject.Find("AudioManager").GetComponent<AudioClips>();
+
+        if (AC == null)
+            Debug.LogError("Player: AudioClips Is NULL");
 
         if (uiManager == null)
             Debug.LogError("The UI Manager Is NULL");
@@ -124,6 +135,8 @@ public class Player : MonoBehaviour
                 Vector3 offset = new Vector3(0, 1.01f, 0);
                 Instantiate(laserPrefab, transform.position + offset, Quaternion.identity);
             }
+
+            AC.PlayLaserAudio();
         }
     }
 
@@ -167,7 +180,12 @@ public class Player : MonoBehaviour
 
     public void PlayerDamage()
     {
-        if(shieldsActive == true)
+        GameObject RandomEngine = Engines[Random.Range(0, Engines.Length)];
+
+        GameObject R_Engine = Engines[0];
+        GameObject L_Engine = Engines[1];
+
+        if (shieldsActive == true)
         {
             shieldsActive = false;
             Shields.SetActive(false);
@@ -176,6 +194,17 @@ public class Player : MonoBehaviour
 
         lives--;
 
+        if(lives == 2)
+        {
+            RandomEngine.SetActive(true);
+        }
+
+        if(lives == 1)
+        {
+            R_Engine.SetActive(true);
+            L_Engine.SetActive(true);
+        }
+
         uiManager.UpdateLives(lives);
 
         if (lives <= 0)
@@ -183,6 +212,8 @@ public class Player : MonoBehaviour
             SM.OnPlayerDeath();
             Destroy(this.gameObject);
         }
+
+        AC.PlayExplosionAudio();
     }
 
     public void AddPoints(int points)

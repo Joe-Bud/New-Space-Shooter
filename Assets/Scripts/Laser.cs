@@ -10,6 +10,8 @@ public class Laser : MonoBehaviour
     [SerializeField]
     GameObject tripleShot;
 
+    bool isEnemyLaser = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -20,19 +22,65 @@ public class Laser : MonoBehaviour
     void Update()
     {
         LaserBehavior();
+        DestroyLaser();
     }
 
     void LaserBehavior()
     {
-        transform.Translate(Vector3.up * speed * Time.deltaTime);
+        if (isEnemyLaser == false)
+            ShootUp();
+        else
+            ShootDown();  
+    }
 
-        if (transform.position.y > 8.0f)
+    void ShootUp()
+    {
+        transform.Translate(Vector3.up * speed * Time.deltaTime);   
+    }
+
+    void ShootDown()
+    {
+        transform.Translate(Vector3.down * speed * Time.deltaTime);
+    }
+
+    void DestroyLaser()
+    {
+        float posY = transform.position.y;
+
+        if (posY >= 8f || posY <= -8)
         {
-            if(transform.parent != null)
+
+            if (transform.parent != null)
+            {
                 Destroy(transform.parent.gameObject);
+            }
+
             Destroy(this.gameObject);
         }
+    }
+    public void EnemyLaser()
+    {
+        isEnemyLaser = true;
+    }
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.tag == "Player" && isEnemyLaser == true)
+        {
+            Player player = other.GetComponent<Player>();
+            AudioClips MasterXploder = GameObject.Find("AudioManager").GetComponent<AudioClips>();
 
+            if (player != null)
+            {
+                player.PlayerDamage();
+                MasterXploder.PlayExplosionAudio();
+                if (transform.parent != null)
+                {
+                    Destroy(transform.parent.gameObject);
+                }
+
+                Destroy(this.gameObject);
+            }
+        }
     }
 }

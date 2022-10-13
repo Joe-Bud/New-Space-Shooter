@@ -10,10 +10,13 @@ public class Powerup : MonoBehaviour
     [SerializeField]
     private int powerupID;
 
+    [SerializeField]
+    private AudioClips AC;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        AC = GameObject.Find("AudioManager").GetComponent<AudioClips>();
     }
 
     // Update is called once per frame
@@ -60,6 +63,7 @@ public class Powerup : MonoBehaviour
                         break;
                 }
             }
+            AC.PlayPowerupAudio();
 
             Destroy(this.gameObject);
         }
