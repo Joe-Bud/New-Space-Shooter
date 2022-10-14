@@ -74,6 +74,11 @@ public class Powerup : MonoBehaviour
                         Destroy(this.gameObject);
                         break;
 
+                    case 4:
+                        player.AddHealth();
+                        Destroy(this.gameObject);
+                        break;
+
                     default:
                         Debug.Log("Default value");
                         break;

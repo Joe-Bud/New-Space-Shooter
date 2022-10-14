@@ -380,6 +380,28 @@ public class Player : MonoBehaviour
         AC.PlayExplosionAudio();
     }
 
+    #region Add Health
+
+    public void AddHealth()
+    {
+        GameObject RandomEngine = Engines[Random.Range(0, Engines.Length)];
+
+        GameObject R_Engine = Engines[0];
+        GameObject L_Engine = Engines[1];
+
+        if (lives < 3)
+        {
+            lives++;
+            RandomEngine.SetActive(false);
+        }
+
+        else
+            lives = 3;
+        uiManager.UpdateLives(lives);
+    }
+
+    #endregion
+
     #endregion
 
     #region Points
