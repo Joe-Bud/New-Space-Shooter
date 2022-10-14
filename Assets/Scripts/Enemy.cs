@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    #region Variables
+
     [SerializeField]
     private float speed = 4f;
 
@@ -21,6 +23,10 @@ public class Enemy : MonoBehaviour
     Animator anim;
 
     Collider2D col;
+
+    #endregion
+
+    #region BuiltIn Methods
 
     // Start is called before the first frame update
     void Start()
@@ -47,6 +53,12 @@ public class Enemy : MonoBehaviour
         LaserBehavior();
     }
 
+    #endregion
+
+    #region Custom Methods
+
+    #region Movement
+
     void EnemyBehavior()
     {
         float randPosX = Random.Range(-8, 8);
@@ -60,6 +72,11 @@ public class Enemy : MonoBehaviour
             transform.position = newPos;
         }
     }
+
+    #endregion
+
+    #region Trigger && Explosion
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if(other.tag == "Player")
@@ -90,6 +107,10 @@ public class Enemy : MonoBehaviour
         AC.PlayExplosionAudio();
     }
 
+    #endregion
+
+    #region Enemy Fire
+
     private void LaserBehavior()
     {
         if (Time.time > canFire && isDead == false)
@@ -107,4 +128,8 @@ public class Enemy : MonoBehaviour
             }
         }
     }
+
+    #endregion
+
+    #endregion
 }

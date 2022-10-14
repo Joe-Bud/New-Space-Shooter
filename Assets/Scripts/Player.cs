@@ -60,6 +60,8 @@ public class Player : MonoBehaviour
 
     #endregion
 
+    #region BuiltIn Methods
+
     // Start is called before the first frame update
     void Start()
     {
@@ -93,6 +95,12 @@ public class Player : MonoBehaviour
         FireLaser();
     }
 
+    #endregion
+
+    #region Custom Methods
+
+    #region Movement
+
     void PlayerMovement()
     {
         float xPos = transform.position.x;
@@ -119,6 +127,10 @@ public class Player : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Laser
+
     void FireLaser()
     {
         if(Input.GetButtonDown("Fire1") && Time.time > canFire || Input.GetButtonDown("Jump") && Time.time > canFire)
@@ -139,6 +151,10 @@ public class Player : MonoBehaviour
             AC.PlayLaserAudio();
         }
     }
+
+    #endregion
+
+    #region IEnums && Powerups
 
     IEnumerator TripleShotPowerDownRoutine()
     {
@@ -178,6 +194,10 @@ public class Player : MonoBehaviour
         shieldsActive = true;
     }
 
+    #endregion
+
+    #region Damage
+
     public void PlayerDamage()
     {
         GameObject RandomEngine = Engines[Random.Range(0, Engines.Length)];
@@ -216,10 +236,18 @@ public class Player : MonoBehaviour
         AC.PlayExplosionAudio();
     }
 
+    #endregion
+
+    #region Points
+
     public void AddPoints(int points)
     {
         score += points;
         uiManager.UpdateScore(score);
     }
+
+    #endregion
+
+    #endregion
 }
 

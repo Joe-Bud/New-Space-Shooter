@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Powerup : MonoBehaviour
 {
+    #region Variables
+
     [SerializeField]
     private float speed = 3.0f;
 
@@ -12,6 +14,10 @@ public class Powerup : MonoBehaviour
 
     [SerializeField]
     private AudioClips AC;
+
+    #endregion
+
+    #region BuiltIn Methods
 
     // Start is called before the first frame update
     void Start()
@@ -24,6 +30,10 @@ public class Powerup : MonoBehaviour
     {
         PU_Movement();
     }
+
+    #endregion
+
+    #region Custom Methods
 
     void PU_Movement()
     {
@@ -68,4 +78,5 @@ public class Powerup : MonoBehaviour
             Destroy(this.gameObject);
         }
     }
+    #endregion
 }

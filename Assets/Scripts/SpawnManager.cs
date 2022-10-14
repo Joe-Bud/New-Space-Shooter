@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
+    #region Variables
+
     [SerializeField]
     private GameObject enemyPrefab;
 
@@ -17,7 +19,11 @@ public class SpawnManager : MonoBehaviour
     private bool stopSpawning = false;
 
     [SerializeField]
-    GameObject [] powerUps; 
+    GameObject [] powerUps;
+
+    #endregion
+
+    #region BuiltIn Methods
 
     // Start is called before the first frame update
     void Start()
@@ -30,6 +36,12 @@ public class SpawnManager : MonoBehaviour
     {
         
     }
+
+    #endregion
+
+    #region Custom Methods
+
+    #region IEnums && Spawn Routines
 
     IEnumerator EnemySpawnRoutine()
     {
@@ -58,6 +70,10 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Start && Stop Spawning Methods
+
     public void OnPlayerDeath()
     {
         stopSpawning = true;
@@ -68,4 +84,8 @@ public class SpawnManager : MonoBehaviour
         StartCoroutine(EnemySpawnRoutine());
         StartCoroutine(SpawnPowerupRoutine());
     }
+
+    #endregion
+
+    #endregion
 }

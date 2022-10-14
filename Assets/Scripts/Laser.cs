@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Laser : MonoBehaviour
 {
+    #region Variables
+
     [SerializeField]
     float speed = 8.0f;
 
@@ -11,6 +13,10 @@ public class Laser : MonoBehaviour
     GameObject tripleShot;
 
     bool isEnemyLaser = false;
+
+    #endregion
+
+    #region BuiltIn Methods
 
     // Start is called before the first frame update
     void Start()
@@ -24,6 +30,12 @@ public class Laser : MonoBehaviour
         LaserBehavior();
         DestroyLaser();
     }
+
+    #endregion
+
+    #region Custom Methods
+
+    #region Laser Behaviors
 
     void LaserBehavior()
     {
@@ -43,6 +55,10 @@ public class Laser : MonoBehaviour
         transform.Translate(Vector3.down * speed * Time.deltaTime);
     }
 
+    #endregion
+
+    #region Destroy Lasers
+
     void DestroyLaser()
     {
         float posY = transform.position.y;
@@ -58,6 +74,10 @@ public class Laser : MonoBehaviour
             Destroy(this.gameObject);
         }
     }
+
+    #endregion
+
+    #region Enemy Laser Behaviors && Triggers
     public void EnemyLaser()
     {
         isEnemyLaser = true;
@@ -83,4 +103,8 @@ public class Laser : MonoBehaviour
             }
         }
     }
+
+    #endregion
+
+    #endregion
 }

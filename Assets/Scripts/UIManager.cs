@@ -6,6 +6,8 @@ using TMPro;
 
 public class UIManager : MonoBehaviour
 {
+    #region Variables 
+
     [SerializeField]
     private TMP_Text scoreText;
 
@@ -27,6 +29,10 @@ public class UIManager : MonoBehaviour
 
     GameManager GM;
 
+    #endregion
+
+    #region BuiltIn Methods 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -47,6 +53,12 @@ public class UIManager : MonoBehaviour
         
     }
 
+    #endregion
+
+    #region Custom Methods
+
+    #region UI Update Methods
+
     public void UpdateScore(int playerScore)
     {
         scoreText.text = "Score : " + playerScore;
@@ -62,6 +74,10 @@ public class UIManager : MonoBehaviour
             GM.GameOver();
         }
     }
+
+    #endregion
+
+    #region Game Over
 
     public void GameOverMethod()
     {
@@ -81,4 +97,8 @@ public class UIManager : MonoBehaviour
 
         
     }
+
+    #endregion
+
+    #endregion
 }
