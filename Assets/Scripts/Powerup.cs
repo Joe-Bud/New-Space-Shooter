@@ -48,6 +48,7 @@ public class Powerup : MonoBehaviour
         if(other.gameObject.tag == "Player")
         {
             Player player = other.gameObject.GetComponent<Player>();
+            player.AddPoints(5);
 
             if (player == null)
                 Debug.LogError("Player Script is NULL");
@@ -66,6 +67,11 @@ public class Powerup : MonoBehaviour
                     case 2:
                         player.ActivateShields();
                         Debug.Log("shields");
+                        break;
+
+                    case 3:
+                        player.AmmoReload();
+                        Destroy(this.gameObject);
                         break;
 
                     default:

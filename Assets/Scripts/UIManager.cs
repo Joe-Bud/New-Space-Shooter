@@ -23,6 +23,24 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private Sprite[] livesSprites;
 
+    [SerializeField]
+    private Sprite[] ShieldLivesSprites;
+
+    [SerializeField]
+    private Image ShieldLivesImg;
+
+    [SerializeField]
+    private Sprite[] AmmoCountSprites;
+
+    [SerializeField]
+    private Image AmmoCountImg;
+
+    [SerializeField]
+    private TMP_Text WhiteAmmoCountText;
+
+    [SerializeField]
+    private TMP_Text RedAmmoCountText;
+
     private float flickerTime = 0.5f;
 
     Player player;
@@ -59,10 +77,16 @@ public class UIManager : MonoBehaviour
 
     #region UI Update Methods
 
+    #region Score
+
     public void UpdateScore(int playerScore)
     {
         scoreText.text = "Score : " + playerScore;
     }
+
+    #endregion
+
+    #region Lives
 
     public void UpdateLives(int currentLives)
     {
@@ -74,6 +98,28 @@ public class UIManager : MonoBehaviour
             GM.GameOver();
         }
     }
+
+    #endregion
+
+    #region Ammo
+
+    public void UpdateAmmo(int AmmoCount)
+    {
+        AmmoCountImg.sprite = AmmoCountSprites[AmmoCount];
+        WhiteAmmoCountText.text = ("Ammo " + AmmoCount);
+        RedAmmoCountText.text = ("Ammo " + AmmoCount);
+    }
+
+    #endregion
+
+    #region Shields
+
+    public void UpdateShieldLives(int currentShieldLives)
+    {
+        ShieldLivesImg.sprite = ShieldLivesSprites[currentShieldLives];
+    }
+
+    #endregion
 
     #endregion
 

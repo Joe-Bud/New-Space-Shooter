@@ -14,6 +14,19 @@ public class Player : MonoBehaviour
 
     private bool speedBoostIsActive = false;
 
+    [HideInInspector]
+    public bool IsShieldActive = false;
+
+    [SerializeField]
+    Color[] ShieldColors;
+
+    [HideInInspector]
+    public bool ShieldDestroyed = false;
+
+    public int ShieldHits = 2;
+
+    private SpriteRenderer NewShieldColor;
+
     private Vector3 startPos;
 
     private float horizontalInput;
@@ -39,12 +52,18 @@ public class Player : MonoBehaviour
     private float canFire = -1f;
 
     [SerializeField]
+    public int maxAmmo = 15;
+
+    public int currentAmmo;
+
+    [HideInInspector]
+    public bool hasAmmo = true;
+
+    [SerializeField]
     private int lives = 3;
 
     [SerializeField]
     private GameObject Shields;
-
-    private bool shieldsActive = false;
 
     public int score = 0;
 
@@ -73,6 +92,12 @@ public class Player : MonoBehaviour
 
         AC = GameObject.Find("AudioManager").GetComponent<AudioClips>();
 
+        Shields.GetComponent<SpriteRenderer>().enabled = false;
+        Shields.GetComponent<Collider2D>().enabled = false;
+        ShieldHits = 0;
+
+        currentAmmo = maxAmmo;
+
         if (AC == null)
             Debug.LogError("Player: AudioClips Is NULL");
 
@@ -82,10 +107,13 @@ public class Player : MonoBehaviour
         if (SM == null)
             Debug.LogError("No Spawn Manager Found");
 
+        if (NewShieldColor == null)
+        {
+            Debug.Log("There are no shields on start");
+        }
+
         startPos = new Vector3(0, 0, 0);
         gameObject.transform.position = startPos;
-
-        Shields.SetActive(false);
     }
 
     // Update is called once per frame
@@ -93,6 +121,7 @@ public class Player : MonoBehaviour
     {
         PlayerMovement();
         FireLaser();
+        ButtonBoost();
     }
 
     #endregion
@@ -108,23 +137,36 @@ public class Player : MonoBehaviour
 
         horizontalInput = Input.GetAxis("Horizontal");
         verticalInput = Input.GetAxis("Vertical");
-        transform.Translate(new Vector3 (horizontalInput, verticalInput, 0) * speed * Time.deltaTime);
+        transform.Translate(new Vector3(horizontalInput, verticalInput, 0) * speed * Time.deltaTime);
 
         // Don't get why I couldn't use yPos right here though. It froze my player unless I typed transform.position.y in the clamp
-        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -3.1f, 0), 0); 
+        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -3.1f, 0), 0);
 
-        if(xPos > 9.75f)
+        if (xPos > 9.75f)
         {
             //xPos = -11.5f;
             transform.position = new Vector3(-9.75f, transform.position.y, 0);
         }
-            
+
 
         else if (xPos < -9.75f)
         {
             //xPos = 11.5f;
-            transform.position = new Vector3 (9.75f, transform.position.y, 0);
+            transform.position = new Vector3(9.75f, transform.position.y, 0);
         }
+    }
+
+    #endregion
+
+    #region Button Boost
+
+    void ButtonBoost()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+            speed = speed * 2;
+
+        if (Input.GetKeyUp(KeyCode.LeftShift))
+            speed = originalSpeed;
     }
 
     #endregion
@@ -133,8 +175,17 @@ public class Player : MonoBehaviour
 
     void FireLaser()
     {
-        if(Input.GetButtonDown("Fire1") && Time.time > canFire || Input.GetButtonDown("Jump") && Time.time > canFire)
+        AmmoCount();
+
+        if (Input.GetButtonDown("Fire1") && hasAmmo == false || Input.GetButtonDown("Jump") && hasAmmo == false)
         {
+            AC.GetNoAmmoAudio();
+        }
+
+        if (Input.GetButtonDown("Fire1") && Time.time > canFire && hasAmmo == true|| Input.GetButtonDown("Jump") && Time.time > canFire && hasAmmo == true)
+        {
+            currentAmmo -= 1;
+
             canFire = Time.time + fireRate;
             
             if(isTripleShotActive == true)
@@ -150,6 +201,7 @@ public class Player : MonoBehaviour
 
             AC.PlayLaserAudio();
         }
+        uiManager.UpdateAmmo(currentAmmo);
     }
 
     #endregion
@@ -163,11 +215,17 @@ public class Player : MonoBehaviour
         StopCoroutine(TripleShotPowerDownRoutine());
     }
 
+    #region TripleShot
+
     public void ActivateTripleShot()
     {
         isTripleShotActive = true;
         StartCoroutine(TripleShotPowerDownRoutine());
     }
+
+    #endregion
+
+    #region SpeedBoost
 
     public void ActivateSpeedBoost()
     {
@@ -181,6 +239,8 @@ public class Player : MonoBehaviour
             speed = originalSpeed;
     }
 
+    #endregion
+
     IEnumerator SpeedBoostPowerDownRoutine()
     {
         yield return new WaitForSeconds(SpeedBoostCoolDownRate);
@@ -188,11 +248,60 @@ public class Player : MonoBehaviour
         speedBoostIsActive = false;
     }
 
+    #region Shields
+
     public void ActivateShields()
     {
-        Shields.SetActive(true);
-        shieldsActive = true;
+        TurnShieldComponentsOn();
+        NewShieldColor = Shields.GetComponent<SpriteRenderer>();
+        IsShieldActive = true;
+        ShieldHits = 3;
+        NewShieldColor.color = ShieldColors[0];
+        uiManager.UpdateShieldLives(3);
     }
+
+    void TurnShieldComponentsOn()
+    {
+        Shields.GetComponent<Collider2D>().enabled = true;
+        Shields.GetComponent<SpriteRenderer>().enabled = true;
+    }
+
+    void TurnShieldComponentsOff()
+    {
+        Shields.GetComponent<Collider2D>().enabled = false;
+        Shields.GetComponent<SpriteRenderer>().enabled = false;
+    }
+
+    public void ShieldDamage()
+    {
+        ShieldHits -= 1;
+    }
+
+    #endregion
+
+    #region AmmoBehavior
+
+    public void AmmoReload()
+    {
+        currentAmmo = maxAmmo;
+        uiManager.UpdateAmmo(currentAmmo);
+        hasAmmo = true;
+    }
+    public void AmmoCount()
+    {
+        if (currentAmmo <= 0)
+        {
+            currentAmmo = 0;
+            hasAmmo = false;
+            Debug.Log("No Ammo");
+        }
+        else
+        {
+            hasAmmo = true;
+        }
+    }
+
+    #endregion
 
     #endregion
 
@@ -205,11 +314,46 @@ public class Player : MonoBehaviour
         GameObject R_Engine = Engines[0];
         GameObject L_Engine = Engines[1];
 
-        if (shieldsActive == true)
+        if (IsShieldActive == true)
         {
-            shieldsActive = false;
-            Shields.SetActive(false);
-            return;
+
+            TurnShieldComponentsOn();
+            NewShieldColor = Shields.GetComponent<SpriteRenderer>();
+            if (AC == null)
+            {
+                Debug.LogError("No Audio source or clip");
+            }
+            if (ShieldHits == 3)
+            {
+                ShieldDamage();
+                ShieldDestroyed = false;
+                NewShieldColor.color = ShieldColors[0];
+                uiManager.UpdateShieldLives(3);
+            }
+            if (ShieldHits == 2)
+            {
+                ShieldDamage();
+                ShieldDestroyed = false;
+                NewShieldColor.color = ShieldColors[1];
+                uiManager.UpdateShieldLives(2);
+                return;
+            }
+            if (ShieldHits == 1)
+            {
+                ShieldDamage();
+                ShieldDestroyed = false;
+                NewShieldColor.color = ShieldColors[2];
+                uiManager.UpdateShieldLives(1);
+                return;
+            }
+            else
+            {
+                IsShieldActive = false;
+                TurnShieldComponentsOff();
+                Debug.Log("ShieldDestroyed");
+                uiManager.UpdateShieldLives(0);
+                return;
+            }
         }
 
         lives--;
