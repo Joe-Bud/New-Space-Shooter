@@ -26,6 +26,19 @@ public class Enemy : MonoBehaviour
 
     #endregion
 
+    [ExecuteInEditMode]
+
+    Transform _startPos;
+    Transform _endPos;
+
+    [SerializeField]
+    [Range(0f, 1f)]
+    //float _lerpPct = 0;
+    public bool inBlackHole = false;
+
+    //[SerializeField]
+    private Transform _blackHole;
+
     #region BuiltIn Methods
 
     // Start is called before the first frame update
@@ -34,6 +47,8 @@ public class Enemy : MonoBehaviour
         player = GameObject.Find("Player").GetComponent<Player>();
 
         AC = GameObject.Find("AudioManager").GetComponent<AudioClips>();
+
+        
 
         if (AC == null)
             Debug.LogError("Enemy: AudioClips is NULL");
@@ -51,6 +66,7 @@ public class Enemy : MonoBehaviour
     {
         EnemyBehavior();
         LaserBehavior();
+        BlackHoleShrink();
     }
 
     #endregion
@@ -132,4 +148,27 @@ public class Enemy : MonoBehaviour
     #endregion
 
     #endregion
+
+    public void BlackHoleShrink()
+    {
+        if (inBlackHole == true)
+        {
+            float scalingFactor = -1.1f;
+            transform.localScale = new Vector2(transform.localScale.x + transform.localScale.x * scalingFactor * Time.deltaTime, transform.localScale.y + transform.localScale.y * scalingFactor * Time.deltaTime);
+            speed = .5f;
+            canFire = 10000;
+            //GravityPull();
+        }
+    }
+
+    /*void GravityPull()
+    {
+        speed = .5f;
+        canFire = 10000;
+        _blackHole = GameObject.Find("BlackHole").GetComponent<Transform>();
+        _startPos = this.gameObject.GetComponent<Transform>();
+        _endPos = _blackHole.GetComponent<Transform>();
+        this.gameObject.transform.position = Vector3.Lerp(_startPos.position, _endPos.position, _lerpPct + .01f);
+        
+    }*/
 }
